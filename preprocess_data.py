@@ -479,7 +479,6 @@ def print_appear_tdict():
         for key, value in sorted_dict.items():
             file.write(f"{key}: {value}\n")
 
-#ssh -p 2024 -L 5000:127.0.0.1:8000 -L 3307:127.0.0.1:3306 cike@202.38.247.167
 if __name__ == "__main__":
     data_csv_path = "origindata/GCJ_with_AST+OAST.csv"
     train_path = "origindata/GCJ_train11.csv"

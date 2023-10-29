@@ -98,20 +98,16 @@ def test_prf_detail(pred, labels, origin_pred, pair_data, origin_data, args, max
         all_pred.append(origin_pred[i])
         all_gd.append(labels[i])
         if pred[i] == labels[i]:
-            # 准确的估计
             all_right.append("True")
             pred_right[pred[i]] += 1
         else:
-            # 不准确的估计
             all_right.append("False")
             if wrong < max_wrong:
                 wrong += 1
                 wrong_names.append(fln)
                 if 0 == labels[i]:
-                    # 把不相似的认为成相似的
                     f = open(f'wrong/0to1/wrong{file1n}={file2n}.txt', "w")
                 else:
-                    # 把相似的认为成不相似的
                     f = open(f'wrong/1to0/wrong{file1n}={file2n}.txt', "w")
                 f.write(f"pred sim: {origin_pred[i]}\n")
                 f.write(f"\n==========================================\n")

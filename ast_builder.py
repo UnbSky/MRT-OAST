@@ -1,11 +1,9 @@
 from javalang.ast import Node
 
-## java 缺少表示一元表达式的结点,通过额外方式获得
 unary_op = ['!','~','++','--','-']
 def get_token_ast(node, cache_dict):
     token = ''
     if isinstance(node, str):
-        #变量名或者符号
         if node in unary_op and not cache_dict['in_BOP']:
             token = "UnaryOperator"
         else:
@@ -13,7 +11,6 @@ def get_token_ast(node, cache_dict):
     elif isinstance(node, set):
         token = 'Modifier'
     elif isinstance(node, Node):
-        #真正的AST结点
         token = node.__class__.__name__
     #if token is not None:
     return token

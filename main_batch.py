@@ -70,8 +70,6 @@ def main(args):
             os.mkdir(args.save)
 
         models = {
-            "BTransfrom_HalfConv_TransConv": BTransfrom_HalfConv_TransConv,
-            "BTransfrom_Pre_Conv": BTransfrom_Pre_Conv,
             "BTransfrom_MRT": BTransfrom_MRT
         }
         model = models[args.model](max_len=args.sen_max_len, num_embeddings=word_size,
