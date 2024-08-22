@@ -63,8 +63,6 @@ with open(oast_common_func_path, 'r') as f:
     common_func = ast.literal_eval(content)
     print(f"common func: {len(common_func)}")
 
-#ssh -p 2024 -L 3306:127.0.0.1:3307 cike@202.38.247.167
-
 for root, dirs, files in os.walk(directory_path):
     print(f"Parsing Folder {root}")
     for file in files:

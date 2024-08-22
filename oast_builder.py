@@ -328,7 +328,6 @@ def get_node_type(node, cache_dict):
         elif "\'" in node_value:
             type_name = "char"
         elif len(node_value) > 2 and node_value[0] == "0" and node_value[1] in ["x", "X"]:
-            #16进制
             type_name = "int"
         elif node_value[-1] in ["L", "l"]:
             type_name = "long"

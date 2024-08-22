@@ -8,9 +8,7 @@ def get_token_ast(node, cache_dict):
     elif isinstance(node, set):
         token = 'Modifier'
     elif isinstance(node, Node):
-        #真正的AST结点
         token = node.__class__.__name__
-    #if token is not None:
     return token
 
 def get_child_ast(root, cache_dict):

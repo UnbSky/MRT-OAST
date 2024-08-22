@@ -170,23 +170,23 @@ if __name__ == "__main__":
     parser.add_argument("--save", type=str, default="__",
                         help="path to save the model")
     parser.add_argument("--tag", type=str, default="GCJ_OAST",
-                        help="path to dataset")
+                        help="tag of dataset")
     parser.add_argument("--data", type=str, default="origindata/GCJ_with_AST+OAST.csv",
                         help="path to dataset")
     parser.add_argument("--train_pair", type=str, default="origindata/GCJ_train11.csv",
-                        help="path to dataset")
+                        help="path to train dataset")
     parser.add_argument("--test_pair", type=str, default="origindata/GCJ_test.csv",
-                        help="path to dataset")
+                        help="path to test dataset")
     parser.add_argument("--valid_pair", type=str, default="origindata/GCJ_valid.csv",
-                        help="path to dataset")
+                        help="path to valid dataset")
     parser.add_argument("--dictionary", type=str, default="origindata/GCJ_XXX_dictionary.txt",
-                        help="path to dataset")
+                        help="path to dictionary")
     parser.add_argument("--ast_type", type=str, default="OAST",
                         help="AST Type")
 
     ''' training parameters '''
     parser.add_argument("--model", type=str, default="BTransfrom_MRT",
-                        help="type of model to use for Stance Project")
+                        help="type of model")
     parser.add_argument("--lr", type=float, default=0.0001,
                         help="learning rate")
     parser.add_argument("--epochs", type=int, default=10,
@@ -204,7 +204,7 @@ if __name__ == "__main__":
 
     ''' model parameters '''
     parser.add_argument("--sen_max_len", type=int, default=256,
-                        help="max time step of tweet sequence")
+                        help="max sequence length")
     parser.add_argument("--transformer_nlayers", type=int, default=2,
                         help="num of layers of transformer")
     parser.add_argument("--d_model", type=int, default=128,
@@ -220,13 +220,13 @@ if __name__ == "__main__":
     parser.add_argument("--is_test", action="store_true",
                         help="flag for training model or only test")
     parser.add_argument("--quick_test", action="store_true",
-                        help="flag for training model or only test")
+                        help="flag for using quick test")
     parser.add_argument("--threshold", type=float, default=0.9,
                         help="The threshold in test")
     parser.add_argument("--valid_threshold", type=int, default=0.8,
-                        help="The threshold in test")
+                        help="The threshold in only test")
     parser.add_argument("--valid_step", type=int, default=1750,
-                        help="The threshold in test")
+                        help="The valid step in train")
 
     my_args = parser.parse_args()
     torch.manual_seed(my_args.seed)
