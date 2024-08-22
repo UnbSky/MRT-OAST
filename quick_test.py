@@ -14,7 +14,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 
 from torch.autograd import Variable
-from tutils import test_prf
+from tutils import test_prf, test_prf_detail
 from concurrent.futures import ThreadPoolExecutor
 
 def quick_test(model, dataset, args, to_save=False, threshold=0.5):
@@ -89,6 +89,8 @@ def quick_test(model, dataset, args, to_save=False, threshold=0.5):
 
     labels = numpy.array(labels)
     binarypred = numpy.where(pred > threshold, 1, 0)
+    #accuracy, f1 = test_prf_detail(binarypred, labels.astype(int), pred, dataset.clone_pair, dataset.processed_data
+    #                                    , args, max_wrong=1000, to_save=to_save)
     accuracy, f1 = test_prf(binarypred, labels)
     print("\n[In Test]Calculate code similarity using %.6f seconds" % (time.time() - tic))
     return accuracy, f1, 0

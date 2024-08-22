@@ -46,20 +46,22 @@ def main(args):
         print("Begin to preprocess only Test Pairs")
         tic = time.time()
         test_set, word_size = getdata(args.data, args.train_pair, args.valid_pair, args.test_pair, args.dictionary
-                                                                 , args.use_oast, args.sen_max_len, quick_test=True)
-        print("Quick Test Preprocess using %.6f seconds" % (time.time() - tic))
-        print("Begin to test")
+                                                                 , args.ast_type, args.sen_max_len, quick_test=True)
+        #print("Quick Test Preprocess using %.6f seconds" % (time.time() - tic))
+        print("Begin to test")    
         tic = time.time()
         model = torch.load(args.save + "/model.pt")
-        #test_detail(model, test_set, args, to_save=True)
-        quick_test(model, test_set, args, to_save=True, threshold=args.threshold)
+        if args.quick_test:
+            quick_test(model, test_set, args, to_save=True, threshold=args.threshold)
+        else:
+            test_detail(model, test_set, args, to_save=True)
         print("Quick Test using %.6f seconds" % (time.time() - tic))
     else:
         tic = time.time()
         [training_set, valid_set, test_set], word_size = getdata(args.data, args.train_pair, args.valid_pair,
                                                                  args.test_pair, args.dictionary
-                                                                 , args.use_oast, args.sen_max_len)
-        print("Normal Preprocess using %.6f seconds" % (time.time() - tic))
+                                                                 , args.ast_type, args.sen_max_len)
+        #print("Normal Preprocess using %.6f seconds" % (time.time() - tic))
 
         word_size = word_size + 1
         dt_string = datetime.now().strftime("%m_%d_%H_%M_%S")
@@ -167,11 +169,11 @@ if __name__ == "__main__":
     ''' load data and save model'''
     parser.add_argument("--save", type=str, default="__",
                         help="path to save the model")
-    parser.add_argument("--tag", type=str, default="GCJ_big_OAST",
+    parser.add_argument("--tag", type=str, default="GCJ_OAST",
                         help="path to dataset")
     parser.add_argument("--data", type=str, default="origindata/GCJ_with_AST+OAST.csv",
                         help="path to dataset")
-    parser.add_argument("--train_pair", type=str, default="origindata/GCJ_train.csv",
+    parser.add_argument("--train_pair", type=str, default="origindata/GCJ_train11.csv",
                         help="path to dataset")
     parser.add_argument("--test_pair", type=str, default="origindata/GCJ_test.csv",
                         help="path to dataset")
@@ -179,8 +181,8 @@ if __name__ == "__main__":
                         help="path to dataset")
     parser.add_argument("--dictionary", type=str, default="origindata/GCJ_XXX_dictionary.txt",
                         help="path to dataset")
-    parser.add_argument("--use_oast", type=bool, default=True,
-                        help="path to dataset")
+    parser.add_argument("--ast_type", type=str, default="OAST",
+                        help="AST Type")
 
     ''' training parameters '''
     parser.add_argument("--model", type=str, default="BTransfrom_MRT",
@@ -217,9 +219,11 @@ if __name__ == "__main__":
     ''' test and valid purpose'''
     parser.add_argument("--is_test", action="store_true",
                         help="flag for training model or only test")
-    parser.add_argument("--threshold", type=float, default=0.0,
+    parser.add_argument("--quick_test", action="store_true",
+                        help="flag for training model or only test")
+    parser.add_argument("--threshold", type=float, default=0.9,
                         help="The threshold in test")
-    parser.add_argument("--valid_threshold", type=int, default=0.9,
+    parser.add_argument("--valid_threshold", type=int, default=0.8,
                         help="The threshold in test")
     parser.add_argument("--valid_step", type=int, default=1750,
                         help="The threshold in test")

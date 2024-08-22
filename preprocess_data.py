@@ -152,7 +152,7 @@ def geth(tlist):
 
 PIC_MAX = 512
 d_amount = np.zeros(PIC_MAX + 1)
-def preprocess_tree(csvfile, use_oast, cache_path, dictionary_data, cut_len):
+def preprocess_tree(csvfile, ast_type, cache_path, dictionary_data, cut_len):
     processed_data = {}
     cache_data = []
     csv_reader = csv.reader(csvfile)
@@ -181,14 +181,14 @@ def preprocess_tree(csvfile, use_oast, cache_path, dictionary_data, cut_len):
         code_line = len(code_line)
 
         totalline += code_line
-        ast = row[3]
-        oast = row[4]
+        ast1 = row[3]
+        ast2 = row[4]
         if len(row) != 5:
             print(len(row))
-        if use_oast:
-            tree_seq = oast
+        if ast_type == "SAST" or ast_type == "AST":
+            tree_seq = ast1
         else:
-            tree_seq = ast
+            tree_seq = ast2
 
         token_list = [s.strip() for s in tree_seq.split(" ") if (s.strip() and s.strip() != '[' and s.strip() != ']')]
         token_tree_list = [s.strip() for s in tree_seq.split(" ") if (s.strip())]
@@ -256,6 +256,8 @@ def preprocess_tree(csvfile, use_oast, cache_path, dictionary_data, cut_len):
         if index not in processed_data:
             processed_data[index] = {}
         processed_data[index][file] = {
+            "code": code,
+            "tree_seq": tree_seq,
             "preorder": preorder_seq_id,
             "postorder": postorder_seq_id,
             "preorder_d": preorder_d_list,
@@ -421,28 +423,23 @@ def get_dictionary(dic_file):
     print(f"Dict Size: {len(token_dict)}")
     return token_dict
 
-def getdata(data_csv_path, train_path, valid_path, test_path, dictionary_path, use_oast, cut_len, quick_test = False):
+def getdata(data_csv_path, train_path, valid_path, test_path, dictionary_path, ast_type, cut_len, quick_test = False):
     cache_path = data_csv_path.replace("origindata", "data")
     token_dictionary_path = dictionary_path
-    if use_oast:
-        cache_path = cache_path.replace("AST+OAST", "OAST")
-        token_dictionary_path = token_dictionary_path.replace("XXX", "OAST")
-    else:
-        cache_path = cache_path.replace("AST+OAST", "AST")
-        token_dictionary_path = token_dictionary_path.replace("XXX", "AST")
+    token_dictionary_path = token_dictionary_path.replace("XXX", ast_type)
     dictionary_file = open(token_dictionary_path, "r", encoding="utf-8")
     dictionary_data = get_dictionary(dictionary_file)
     word_size = len(dictionary_data)
 
     csvfile = open(data_csv_path, "r", encoding="utf-8")
-    processed_data = preprocess_tree(csvfile, use_oast, cache_path, dictionary_data, cut_len)
+    processed_data = preprocess_tree(csvfile, ast_type, cache_path, dictionary_data, cut_len)
 
     # if os.path.exists(cache_path):
     #     csvfile = open(cache_path, "r", encoding="utf-8")
     #     processed_data = read_from_cache(csvfile)
     # else:
     #     csvfile = open(data_csv_path, "r", encoding="utf-8")
-    #     processed_data = preprocess_tree(csvfile, use_oast, cache_path, dictionary_data)
+    #     processed_data = preprocess_tree(csvfile, ast_type, cache_path, dictionary_data)
     if quick_test:
         test_pair = open(test_path, "r", encoding="utf-8")
         test_pair_datas = process_pair(test_pair)
@@ -479,6 +476,7 @@ def print_appear_tdict():
         for key, value in sorted_dict.items():
             file.write(f"{key}: {value}\n")
 
+#ssh -p 2024 -L 5000:127.0.0.1:8000 -L 3307:127.0.0.1:3306 cike@202.38.247.167
 if __name__ == "__main__":
     data_csv_path = "origindata/GCJ_with_AST+OAST.csv"
     train_path = "origindata/GCJ_train11.csv"

@@ -17,15 +17,15 @@ def parse_ast(java_code, level):
         programast = parser.parse_member_declaration()
     return programast
 
-## build AST sequence
-def build_AST(programast):
+## build DAST sequence
+def build_DAST(programast):
     cache_dict = {"in_BOP": False}
     all_ast_tokens = get_sequence_ast(programast, cache_dict)
     #print(all_ast_tokens)
     return all_ast_tokens
 
-## build OAST sequence
-def build_OAST(programast):
+## build SAST sequence
+def build_SAST(programast):
     cache_dict = {
         "in_BOP": False,
         "symbol_table": {},

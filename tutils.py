@@ -4,7 +4,9 @@ import numpy
 import math
 import torch
 import time
+import csv
 import shutil
+
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -84,6 +86,7 @@ def test_prf_detail(pred, labels, origin_pred, pair_data, origin_data, args, max
     all_pred = []
     all_gd = []
     all_right = []
+    wrong_list_detail = []
     for i in range(total):
         pair_info = pair_data[i]
         index1 = pair_info["index1"]
@@ -98,24 +101,35 @@ def test_prf_detail(pred, labels, origin_pred, pair_data, origin_data, args, max
         all_pred.append(origin_pred[i])
         all_gd.append(labels[i])
         if pred[i] == labels[i]:
+            # 准确的估计
             all_right.append("True")
             pred_right[pred[i]] += 1
         else:
+            # 不准确的估计
             all_right.append("False")
             if wrong < max_wrong:
                 wrong += 1
                 wrong_names.append(fln)
                 if 0 == labels[i]:
+                    # 把不相似的认为成相似的
                     f = open(f'wrong/0to1/wrong{file1n}={file2n}.txt', "w")
                 else:
+                    # 把相似的认为成不相似的
                     f = open(f'wrong/1to0/wrong{file1n}={file2n}.txt', "w")
+                code1 = origin_data[index1][file1]["code"]
+                code2 = origin_data[index2][file2]["code"]
+                len1 = origin_data[index1][file1]["len"]
+                len2 = origin_data[index2][file2]["len"]
+                tree_seq1 = origin_data[index1][file1]["tree_seq"]
+                tree_seq2 = origin_data[index2][file2]["tree_seq"]
                 f.write(f"pred sim: {origin_pred[i]}\n")
                 f.write(f"\n==========================================\n")
                 f.write(f"origin_1 file: {file1n}\n")
-                #f.write(origin_data[index1][file1])
+                f.write(code1)
                 f.write(f"\n-------------------------------------------\n")
                 f.write(f"origin_2 file: {file1n}\n")
-                #f.write(origin_data[index2][file2])
+                f.write(code2)
+            wrong_list_detail.append({"File1": file1n, "File2": file2n, "Code1": code1, "Code2": code2, "Tree1": tree_seq1, "Tree2": tree_seq2, "Len1": len1, "Len2": len2, "Result": labels[i], "Pred": origin_pred[i]})
         gold[labels[i]] += 1
     keys = list(wfdict.keys())
     values = list(wfdict.values())
@@ -124,7 +138,11 @@ def test_prf_detail(pred, labels, origin_pred, pair_data, origin_data, args, max
     with open(f'wrong/preds.csv', 'w', newline='') as csvfile:
         for i in range(len(all_names)):
             csvfile.write(all_names[i] + "," + str(all_pred[i]) + "," + str(all_gd[i]) + "," + str(all_right[i]) + "\n")
-
+    keys = wrong_list_detail[0].keys()  # 获取字典的键作为列名
+    with open('wrong/wrong_list_detail.csv', 'w', newline='') as output_file:
+        dict_writer = csv.DictWriter(output_file, fieldnames=keys)
+        dict_writer.writeheader()
+        dict_writer.writerows(wrong_list_detail)
     print("  Prediction:", pred_all, " Right:", pred_right, " Gold:", gold)
     ''' -- for all labels -- '''
     print("  ****** Neg|Neu|Pos ******")
@@ -146,7 +164,7 @@ def test_prf_detail(pred, labels, origin_pred, pair_data, origin_data, args, max
         else:
             rfile = open(csv_path, 'a')
         rfile.write(
-            f'{args.model},{args.data},{args.train_pair},{args.test_pair},{args.valid_pair},{args.use_oast},{args.output_dim},{args.lr},{args.epochs},{args.batch_size},')
+            f'{args.model},{args.data},{args.train_pair},{args.test_pair},{args.valid_pair},{args.ast_type},{args.output_dim},{args.lr},{args.epochs},{args.batch_size},')
         rfile.write(
             f'{args.dropout},{args.seed},{args.transformer_nlayers},{args.d_model},{args.d_ff},{args.h},')
         rfile.write(
