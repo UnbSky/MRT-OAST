@@ -101,20 +101,16 @@ def test_prf_detail(pred, labels, origin_pred, pair_data, origin_data, args, max
         all_pred.append(origin_pred[i])
         all_gd.append(labels[i])
         if pred[i] == labels[i]:
-            # 准确的估计
             all_right.append("True")
             pred_right[pred[i]] += 1
         else:
-            # 不准确的估计
             all_right.append("False")
             if wrong < max_wrong:
                 wrong += 1
                 wrong_names.append(fln)
                 if 0 == labels[i]:
-                    # 把不相似的认为成相似的
                     f = open(f'wrong/0to1/wrong{file1n}={file2n}.txt', "w")
                 else:
-                    # 把相似的认为成不相似的
                     f = open(f'wrong/1to0/wrong{file1n}={file2n}.txt', "w")
                 code1 = origin_data[index1][file1]["code"]
                 code2 = origin_data[index2][file2]["code"]
@@ -138,7 +134,7 @@ def test_prf_detail(pred, labels, origin_pred, pair_data, origin_data, args, max
     with open(f'wrong/preds.csv', 'w', newline='') as csvfile:
         for i in range(len(all_names)):
             csvfile.write(all_names[i] + "," + str(all_pred[i]) + "," + str(all_gd[i]) + "," + str(all_right[i]) + "\n")
-    keys = wrong_list_detail[0].keys()  # 获取字典的键作为列名
+    keys = wrong_list_detail[0].keys()
     with open('wrong/wrong_list_detail.csv', 'w', newline='') as output_file:
         dict_writer = csv.DictWriter(output_file, fieldnames=keys)
         dict_writer.writeheader()
@@ -321,10 +317,6 @@ def test_detail(model, dataset, args, to_save):
 
 
 def var_batch(max_len, batch_size, ast_token, sentences_seqlen, sentences_mask, others):
-    """
-    Transform the input batch to PyTorch variables
-    :return:
-    """
     # dtype = torch.from_numpy(sentences, dtype=torch.cuda.LongTensor)
     ast_token_ = []
     sentences_mask_ = []
